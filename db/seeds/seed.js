@@ -76,9 +76,41 @@ const seed = (data) => {
         )
         return db.query(queryStr);
        }) 
-
-  // 1. create tables
-  // 2. insert data
+       .then (() => {
+        const queryStr = format(
+          `INSERT INTO articles
+          (title, topic, author, body, created_at, votes)
+          VALUES
+          %L
+          RETURNING *;`,
+          articleData.map((article) => [
+          article.title,
+          article.topic,
+          article.author,
+          article.body,
+          article.created_at,
+          article.votes
+          ])
+        )
+        return db.query(queryStr);
+       }) 
+       .then (() => {
+        const queryStr = format(
+          `INSERT INTO comments
+          (body, votes, author, article_id, created_at)
+          VALUES
+          %L
+          RETURNING *;`,
+          commentData.map((comment) => [
+          comment.body,
+          comment.votes,
+          comment.author,
+          comment.article_id,
+          comment.created_at
+          ])
+        )
+        return db.query(queryStr);
+       }) 
 };
 
 
