@@ -4,7 +4,7 @@ const format = require('pg-format');
 const seed = (data) => {
   const { articleData, commentData, topicData, userData } = data;
     return db
-      .query('DROP TABLE IF EXISTS topics, users, articles, comments;')
+      .query('DROP TABLE IF EXISTS comments, articles, users, topics;')
       .then (() => {
         return db.query(
           `CREATE TABLE topics (
@@ -47,7 +47,21 @@ const seed = (data) => {
           );`
         )
       })
-      /* .then (() => {
+       .then (() => {
+        const queryStr = format(
+          `INSERT INTO topics
+          (description, slug)
+          VALUES
+          %L
+          RETURNING *;`,
+          topicData.map((topic) => [
+          topic.description,
+          topic.slug
+          ])
+        )
+        return db.query(queryStr);
+       }) 
+       .then (() => {
         const queryStr = format(
           `INSERT INTO users
           (username, avatar_url, name)
@@ -60,11 +74,12 @@ const seed = (data) => {
           user.name
           ])
         )
-        return db.query(queryStr)
-         }) */ 
+        return db.query(queryStr);
+       }) 
 
   // 1. create tables
   // 2. insert data
 };
+
 
 module.exports = seed;
