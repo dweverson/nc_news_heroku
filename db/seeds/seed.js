@@ -18,7 +18,7 @@ const seed = (data) => {
         `CREATE TABLE users (
           username TEXT PRIMARY KEY,
           avatar_url TEXT,
-          name TEXT NOT NULL
+          name TEXT
           );`
         )
       })
@@ -31,19 +31,23 @@ const seed = (data) => {
             votes INT,
             topic TEXT,
             author TEXT,
-            created_at DATE 
-          );`
+            created_at DATE, 
+            FOREIGN KEY (topic) REFERENCES topics(slug),
+            FOREIGN KEY (author) REFERENCES users(username)
+            );`
         )
       })
       .then (() => {
         return db.query(
-          `CREATE TABLE comments (
+           `CREATE TABLE comments (
             comment_id SERIAL PRIMARY KEY,
             author TEXT,
             article_id INT,
             votes INT,
             created_at DATE,
-            body TEXT
+            body TEXT,
+            FOREIGN KEY (author) REFERENCES users(username),
+            FOREIGN KEY (article_id) REFERENCES articles(article_id)
           );`
         )
       })
