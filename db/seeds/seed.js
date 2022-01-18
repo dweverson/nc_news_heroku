@@ -8,7 +8,7 @@ const seed = (data) => {
       .then (() => {
         return db.query(
           `CREATE TABLE topics (
-            slug TEXT PRIMARY KEY,
+            slug TEXT PRIMARY KEY NOT NULL,
             description TEXT
           );`
         )
@@ -16,7 +16,7 @@ const seed = (data) => {
       .then (() => {
         return db.query(
         `CREATE TABLE users (
-          username TEXT PRIMARY KEY,
+          username TEXT PRIMARY KEY NOT NULL,
           avatar_url TEXT,
           name TEXT
           );`
@@ -31,9 +31,9 @@ const seed = (data) => {
             votes INT,
             topic TEXT,
             author TEXT,
-            created_at DATE, 
-            FOREIGN KEY (topic) REFERENCES topics(slug),
-            FOREIGN KEY (author) REFERENCES users(username)
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+            FOREIGN KEY (topic) REFERENCES topics(slug) ON DELETE SET NULL,
+            FOREIGN KEY (author) REFERENCES users(username) ON DELETE SET NULL
             );`
         )
       })
@@ -44,10 +44,10 @@ const seed = (data) => {
             author TEXT,
             article_id INT,
             votes INT,
-            created_at DATE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             body TEXT,
-            FOREIGN KEY (author) REFERENCES users(username),
-            FOREIGN KEY (article_id) REFERENCES articles(article_id)
+            FOREIGN KEY (author) REFERENCES users(username) ON DELETE SET NULL,
+            FOREIGN KEY (article_id) REFERENCES articles(article_id) ON DELETE SET NULL
           );`
         )
       })
