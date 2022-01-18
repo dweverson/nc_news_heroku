@@ -13,6 +13,17 @@ describe("test connection", () => {
     })
 })
 
+describe("/invalid_url", () =>{
+    test("status 404 and message", () => {
+        return request(app)
+            .get("/invalid_url")
+            .expect(404)
+            .then((res) => {
+                expect(res.body.msg).toBe("Invalid URL")
+            })
+    })
+})
+
 describe('1. GET /api/topics', () => {
     test('status:200, responds with an array of topic objects', () => {
       return request(app)
