@@ -60,6 +60,14 @@ describe('1. GET /api/topics', () => {
             );
         });
     });
+    test('status:400 invalid ID, returns error message', () => {
+        return request(app)
+          .get('/api/articles/invalid_id')
+          .expect(400)
+          .then((res) => {
+            expect(res.body.msg).toBe("Bad request");
+          });
+      });
   });
 
   describe('3. PATCH /api/articles/:article_id', () => {

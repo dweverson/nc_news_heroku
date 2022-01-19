@@ -1,6 +1,6 @@
 const express = require("express");
 const { getTopics } = require('./controllers/topics.controller');
-
+const { handle404s, handlesPsqlErrors, handleCustomErrors, handleServerErrors } = require('./errors/error')
 const {
     getArticleById,
     patchVotesByArticleId
@@ -15,16 +15,10 @@ app.get('/api/articles/:article_id', getArticleById);
 app.patch('/api/articles/:article_id', patchVotesByArticleId)
 
 
-app.all("*", (req, res) => {
-    res.status(404).send({ msg: "Invalid URL"});
-});
+app.all("*", handle404s)
 
-app.use((err, req, res, next) => {
-    if (err.code === "22P02") {
-        res.status(400).send({ msg: "Bad Request"});
-    } else {
-        next(err);
-    }
-})
+app.use(handlesPsqlErrors)
+app.use(handleCustomErrors)
+app.use(handleServerErrors)
 
 module.exports = app;
