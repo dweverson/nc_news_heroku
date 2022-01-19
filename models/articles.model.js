@@ -16,13 +16,13 @@ exports.selectArticleById = (article_id) => {
     });
 };
 
-exports.patchArticleVotes = (article_id, voteIncrement) => {
+exports.patchArticleVotes = (article_id, vote_increment) => {   
     return db.query(
         `UPDATE articles
             SET votes = votes + $1
             WHERE article_id = $2
             RETURNING *;`,
-            [voteIncrement.inc_votes, article_id]
+            [vote_increment, article_id]
     )
     .then(({ rows }) => {
         return rows[0]

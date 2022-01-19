@@ -12,12 +12,13 @@ exports.getArticleById = ( req, res, next) => {
 
 exports.patchVotesByArticleId = (req, res, next) => {
     const { article_id } = req.params;
-    
-    if (Object.keys(req.body).length === 1) {
-      patchArticleVotes(article_id, req.body).then((article) => {
+    const { inc_votes } = req.body
+ 
+     return patchArticleVotes(article_id, inc_votes)
+     .then((article) => {
         res.status(200).send({ article });
-      });
-    } else {
-      res.status(400).send({});
-    }
+      })
+      .catch((err) => {
+        next(err);
+        });
   };
