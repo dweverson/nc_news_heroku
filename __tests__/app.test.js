@@ -7,12 +7,6 @@ const request = require('supertest');
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
-describe("test connection", () => {
-    test(" test ", () => {
-
-    })
-})
-
 describe("/invalid_url", () =>{
     test("status 404 and message", () => {
         return request(app)
@@ -44,3 +38,72 @@ describe('1. GET /api/topics', () => {
         });
     });
   });
+
+  describe('2. GET /api/articles/:article_id', () => {
+    test('status:200, responds with article object selected by url id param', () => {
+      return request(app)
+        .get('/api/articles/1')
+        .expect(200)
+        .then(({ body }) => {
+          const { article } = body;
+            expect(article).toEqual(
+              expect.objectContaining({
+                article_id: 1,
+                author: expect.any(String),
+                body: expect.any(String),
+                created_at: expect.any(String),
+                title: expect.any(String),
+                topic: expect.any(String),
+                votes: expect.any(Number)
+              })
+            );
+        });
+    });
+  });
+
+  describe('3. PATCH /api/articles/:article_id', () => {
+    test('status:200, increments vote count and responds with updated article', () => {
+      return request(app)
+        .patch('/api/articles/1')
+        .send({ inc_votes : 1 })
+        .expect(200)
+        .then(({ body }) => {
+          const { article } = body;
+            expect(article).toEqual(
+              expect.objectContaining({
+                article_id: 1,
+                author: expect.any(String),
+                body: expect.any(String),
+                created_at: expect.any(String),
+                title: expect.any(String),
+                topic: expect.any(String),
+                votes: 101
+              })
+            );
+        });
+    });
+    test('status:200, increments minus vote count and responds with updated article', () => {
+        return request(app)
+          .patch('/api/articles/1')
+          .send({ inc_votes : -1 })
+          .expect(200)
+          .then(({ body }) => {
+            const { article } = body;
+              expect(article).toEqual(
+                expect.objectContaining({
+                  article_id: 1,
+                  author: expect.any(String),
+                  body: expect.any(String),
+                  created_at: expect.any(String),
+                  title: expect.any(String),
+                  topic: expect.any(String),
+                  votes: 99
+                })
+              );
+          });
+      });
+  });
+
+
+
+
