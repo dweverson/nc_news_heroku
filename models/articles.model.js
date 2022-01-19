@@ -4,8 +4,10 @@ exports.selectArticleById = (article_id) => {
     return db
     .query(
         `
-        SELECT * FROM articles
-        WHERE article_id = $1
+        SELECT a.*, COUNT(c.article_id) as comment_count FROM articles a 
+        LEFT JOIN comments c on a.article_id = c.article_id
+        WHERE a.article_id = $1
+        GROUP BY a.article_id;
         `,
         [article_id]
     )

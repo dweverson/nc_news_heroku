@@ -51,6 +51,7 @@ describe('1. GET /api/topics', () => {
                 article_id: 1,
                 author: expect.any(String),
                 body: expect.any(String),
+                comment_count: expect.any(String),
                 created_at: expect.any(String),
                 title: expect.any(String),
                 topic: expect.any(String),
