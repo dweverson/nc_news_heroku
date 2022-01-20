@@ -1,4 +1,4 @@
-const { selectArticleById, patchArticleVotes } = require('../models/articles.model.js');
+const { selectArticleById, patchArticleVotes, selectArticles, selectCommentsByArticleId } = require('../models/articles.model.js');
 
 exports.getArticleById = ( req, res, next) => {
     const { article_id } = req.params;
@@ -30,3 +30,49 @@ exports.patchVotesByArticleId = (req, res, next) => {
         next(err);
         });
   };
+
+exports.getArticles = ( req, res, next) => {
+let sort_by = req.query.sort_by
+let order_by = req.query.order_by
+let topic = req.query.topic
+ let reqKeys = Object.keys(req.query)
+console.log(req.query)
+const allowedSortBys = ['author', 'title', 'topic', 'created_at', 'votes', 'comment_count', undefined]
+const allowedQueries = ['sort_by', 'order_by', 'topic']
+  
+   if (!reqKeys.some(key => allowedQueries.includes(key)) && reqKeys.length > 0) {
+        next({ status: 401, msg: 'Bad request' });
+    }
+   if (!allowedSortBys.includes(sort_by)) {
+    next({ status: 402, msg: 'Bad request' });
+    }
+  if (!['asc', 'desc', undefined].includes(order_by)) {
+    next({ status: 403, msg: 'Bad request' });
+    }
+
+    selectArticles(sort_by, order_by, topic).then((articles) => {
+        if (articles) {
+        res.status(200).send({ articles }) 
+        } else {
+            return Promise.reject({ status: 404, msg: "Not found"})
+        }
+    })
+    .catch((err) => {
+        next(err);
+        });
+}
+
+exports.getCommentsByArticleId = ( req, res, next) => {
+    const { article_id } = req.params;
+    selectCommentsByArticleId(article_id).then((comments) => {
+        if (comments) {
+        res.status(200).send({ comments }) 
+        } else {
+            return Promise.reject({ status: 404, msg: "Not found"})
+        }
+    })
+    .catch((err) => {
+        next(err);
+        });
+}
+
