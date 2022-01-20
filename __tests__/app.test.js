@@ -58,8 +58,16 @@ describe('1. GET /api/topics', () => {
                 votes: expect.any(Number)
               })
             );
-        });
+        }); 
     });
+    test('status: 404, id that does not exist, return error message', () => {
+        return request(app)
+          .get('/api/articles/1000')
+          .expect(404)
+          .then((res) => {
+            expect(res.body.msg).toBe("Not found")
+          }); 
+      });
     test('status:400 invalid ID, returns error message', () => {
         return request(app)
           .get('/api/articles/invalid_id')
@@ -95,6 +103,26 @@ describe('1. GET /api/topics', () => {
         return request(app)
           .patch('/api/articles/1')
           .send({ inc_votes : -1 })
+          .expect(200)
+          .then(({ body }) => {
+            const { article } = body;
+              expect(article).toEqual(
+                expect.objectContaining({
+                  article_id: 1,
+                  author: expect.any(String),
+                  body: expect.any(String),
+                  created_at: expect.any(String),
+                  title: expect.any(String),
+                  topic: expect.any(String),
+                  votes: 99
+                })
+              );
+          });
+      });
+      test('status:200, ignores additional key/value pairs', () => {
+        return request(app)
+          .patch('/api/articles/1')
+          .send({ inc_votes : -1, additionl_key : "pair" })
           .expect(200)
           .then(({ body }) => {
             const { article } = body;
