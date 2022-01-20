@@ -20,9 +20,13 @@ exports.patchVotesByArticleId = (req, res, next) => {
  
      return patchArticleVotes(article_id, inc_votes)
      .then((article) => {
-        res.status(200).send({ article });
-      })
-      .catch((err) => {
+         if (article) {
+            res.status(200).send({ article });
+             } else { 
+                return Promise.reject({ status: 404, msg: "Not found"}) 
+             }
+         })
+        .catch((err) => {
         next(err);
         });
   };

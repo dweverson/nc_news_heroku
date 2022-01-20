@@ -139,6 +139,33 @@ describe('1. GET /api/topics', () => {
               );
           });
       });
+      test('status:400, invalid input datatype, respond with error message', () => {
+        return request(app)
+          .patch('/api/articles/1')
+          .send({ inc_votes : "invalid datatype" })
+          .expect(400)
+          .then((res) => {
+            expect(res.body.msg).toBe("Bad request");
+          });
+      });
+      test('status:400 invalid ID, returns error message', () => {
+        return request(app)
+          .patch('/api/articles/invalid_id')
+          .send({ inc_votes : 1 })
+          .expect(400)
+          .then((res) => {
+            expect(res.body.msg).toBe("Bad request");
+          });
+      });
+      test('status: 404, id that does not exist, return error message', () => {
+        return request(app)
+          .patch('/api/articles/1000')
+          .send({ inc_votes : 1 })
+          .expect(404)
+          .then((res) => {
+            expect(res.body.msg).toBe("Not found")
+          }); 
+      });
   });
 
 
