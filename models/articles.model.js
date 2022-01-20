@@ -45,7 +45,6 @@ qryString += `GROUP BY a.article_id
            //  console.log(qryString)
     return db.query(qryString)
         .then(({ rows }) => {
-            //console.log(rows)
         return rows
     });
 }

@@ -169,10 +169,10 @@ describe('1. GET /api/topics', () => {
   });
 
   describe('4. GET /api/articles', () => {
-    test.only('status:200, responds with an array of article objects', () => {
+    test('status:200, responds with an array of article objects', () => {
       return request(app)
-        .get('/api/articles?sort_by=')
-        .expect(200)
+        .get('/api/articles')
+        .expect(200) 
         .then(({ body }) => {
           const { articles } = body;
           expect(articles).toBeInstanceOf(Array);
@@ -182,8 +182,7 @@ describe('1. GET /api/topics', () => {
               expect.objectContaining({
                 article_id: expect.any(Number),
                 author: expect.any(String),
-                body: expect.any(String),
-               // comment_count: expect.any(String),
+                comment_count: expect.any(String),
                 created_at: expect.any(String),
                 title: expect.any(String),
                 topic: expect.any(String),
@@ -193,10 +192,11 @@ describe('1. GET /api/topics', () => {
           });
         });
     });
-    test('status:200, article array sorted by date default', () => {
+
+    test('status:200, responds with an array of articles sorted by author', () => {
         return request(app)
-          .get('/api/articles')
-          .expect(200)
+          .get('/api/articles?sort_by=author')
+          .expect(200)  
           .then(({ body }) => {
             const { articles } = body;
             expect(articles).toBeInstanceOf(Array);
@@ -206,7 +206,6 @@ describe('1. GET /api/topics', () => {
                 expect.objectContaining({
                   article_id: expect.any(Number),
                   author: expect.any(String),
-                  body: expect.any(String),
                   comment_count: expect.any(String),
                   created_at: expect.any(String),
                   title: expect.any(String),
@@ -217,44 +216,43 @@ describe('1. GET /api/topics', () => {
             });
           });
       });
-      test('status:200, article array ordered by default descending', () => {
-        return request(app)
-          .get('/api/articles?ordered_by=created_at')
-          .expect(200)
-          .then(({ body }) => {
-            const { articles } = body;
-            expect(articles).toBeInstanceOf(Array);
-            expect(articles).toHaveLength(12);
-            articles.forEach((article) => {
-              expect(article).toEqual(
-                expect.objectContaining({
-                  article_id: expect.any(Number),
-                  author: expect.any(String),
-                  body: expect.any(String),
-                  comment_count: expect.any(String),
-                  created_at: expect.any(String),
-                  title: expect.any(String),
-                  topic: expect.any(String),
-                  votes: expect.any(Number)
-                })
-              );
-            });
-          });
-      });
-      test('status:200, article array filtered by topic', () => {
+    
+      test('status:200, returns array of article by topic', () => {
         return request(app)
           .get('/api/articles?topic=mitch')
           .expect(200)
           .then(({ body }) => {
             const { articles } = body;
             expect(articles).toBeInstanceOf(Array);
+            expect(articles).toHaveLength(11);
+            articles.forEach((article) => {
+              expect(article).toEqual(
+                expect.objectContaining({
+                  article_id: expect.any(Number),
+                  author: expect.any(String),
+                  comment_count: expect.any(String),
+                  created_at: expect.any(String),
+                  title: expect.any(String),
+                  topic: expect.any(String),
+                  votes: expect.any(Number)
+                })
+              );
+            });
+          });
+      });
+      test('status:200, article array ordered by asc', () => {
+        return request(app)
+          .get('/api/articles?order_by=asc')
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles).toBeInstanceOf(Array);
             expect(articles).toHaveLength(12);
             articles.forEach((article) => {
               expect(article).toEqual(
                 expect.objectContaining({
                   article_id: expect.any(Number),
                   author: expect.any(String),
-                  body: expect.any(String),
                   comment_count: expect.any(String),
                   created_at: expect.any(String),
                   title: expect.any(String),
@@ -265,6 +263,46 @@ describe('1. GET /api/topics', () => {
             });
           });
      });
+     test('status:400, Bad request invalid sort_by query', () => {
+        return request(app)
+          .get('/api/articles?sort_by=')
+          .expect(400)
+          .then((res) => {
+            expect(res.body.msg).toBe("Bad request")
+     });
+    })
+    test('status:400, Bad request invalid order_by query', () => {
+        return request(app)
+          .get('/api/articles?order_by=')
+          .expect(400)
+          .then((res) => {
+            expect(res.body.msg).toBe("Bad request")
+     });
+    })
+    test('status:200, non existing topic query returns 0 results empty array', () => {
+        return request(app)
+          .get('/api/articles?topic=heck')
+          .expect(200)
+          .then((res) => {
+            expect(res.body.msg).toBe("no topic, or articles do not exist")
+     });
+    })
+    test('status:200, topic query with no articles returns 0 results empty array', () => {
+        return request(app)
+          .get('/api/articles?topic=paper')
+          .expect(200)
+          .then((res) => {
+            expect(res.body.msg).toBe("no topic, or articles do not exist")
+     });
+    })
+    test('status:400, Bad request invalid query', () => {
+        return request(app)
+          .get('/api/articles?invalid_query=')
+          .expect(400)
+          .then((res) => {
+            expect(res.body.msg).toBe("Bad request")
+     });
+    })
 })
 
 describe('5. GET /api/articles/:article_id/comments', () => {
@@ -289,6 +327,22 @@ describe('5. GET /api/articles/:article_id/comments', () => {
           });
         });
     });
+    test('status:200, id that does not exist, return error message', () => {
+        return request(app)
+          .get('/api/articles/1000/comments')
+          .expect(200)
+          .then((res) => {
+            expect(res.body.msg).toBe("No comments, or article doesnt exist")
+          }); 
+      });
+    test('status:400 invalid ID, returns error message', () => {
+        return request(app)
+          .get('/api/articles/invalid_id/comments')
+          .expect(400)
+          .then((res) => {
+            expect(res.body.msg).toBe("Bad request");
+          });
+      });
 });
 
 

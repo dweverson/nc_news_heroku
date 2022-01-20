@@ -1,3 +1,4 @@
+const comments = require('../db/data/test-data/comments.js');
 const { selectArticleById, patchArticleVotes, selectArticles, selectCommentsByArticleId } = require('../models/articles.model.js');
 
 exports.getArticleById = ( req, res, next) => {
@@ -36,24 +37,26 @@ let sort_by = req.query.sort_by
 let order_by = req.query.order_by
 let topic = req.query.topic
  let reqKeys = Object.keys(req.query)
-console.log(req.query)
 const allowedSortBys = ['author', 'title', 'topic', 'created_at', 'votes', 'comment_count', undefined]
 const allowedQueries = ['sort_by', 'order_by', 'topic']
   
    if (!reqKeys.some(key => allowedQueries.includes(key)) && reqKeys.length > 0) {
-        next({ status: 401, msg: 'Bad request' });
+        next({ status: 400, msg: 'Bad request' });
     }
    if (!allowedSortBys.includes(sort_by)) {
-    next({ status: 402, msg: 'Bad request' });
+    next({ status: 400, msg: 'Bad request' });
     }
   if (!['asc', 'desc', undefined].includes(order_by)) {
-    next({ status: 403, msg: 'Bad request' });
+    next({ status: 400, msg: 'Bad request' });
     }
 
     selectArticles(sort_by, order_by, topic).then((articles) => {
-        if (articles) {
+        if (articles.length > 0) {
         res.status(200).send({ articles }) 
-        } else {
+        } else if(articles.length === 0) {
+            res.status(200).send({msg: "no topic, or articles do not exist"})
+        }
+        else {
             return Promise.reject({ status: 404, msg: "Not found"})
         }
     })
@@ -65,9 +68,13 @@ const allowedQueries = ['sort_by', 'order_by', 'topic']
 exports.getCommentsByArticleId = ( req, res, next) => {
     const { article_id } = req.params;
     selectCommentsByArticleId(article_id).then((comments) => {
-        if (comments) {
+        if (comments.length > 0) {
         res.status(200).send({ comments }) 
-        } else {
+        } else if (comments.length === 0) {
+            return Promise.reject({ status: 200, msg: "No comments, or article doesnt exist" })
+            //res.status(204).send({msg: "No comments, or article doesnt exist"})
+        }
+        else {
             return Promise.reject({ status: 404, msg: "Not found"})
         }
     })
