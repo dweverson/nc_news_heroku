@@ -1,5 +1,6 @@
 const comments = require('../db/data/test-data/comments.js');
-const { selectArticleById, patchArticleVotes, selectArticles, selectCommentsByArticleId } = require('../models/articles.model.js');
+const { selectArticleById, patchArticleVotes, selectArticles, selectCommentsByArticleId, postComment } = require('../models/articles.model.js');
+const { checkArticleIdExists, checkUserExists } = require('../utils/utils.js')
 
 exports.getArticleById = ( req, res, next) => {
     const { article_id } = req.params;
@@ -83,3 +84,37 @@ exports.getCommentsByArticleId = ( req, res, next) => {
         });
 }
 
+exports.postCommentByArticleId = (req, res, next) => {
+    const { article_id } = req.params;
+    const { username, body } = req.body
+
+    return checkArticleIdExists(article_id).then((articleExists) => {
+        if (articleExists){
+                return postComment(article_id, username, body)
+                .then((comment) => {
+                    if (comment) { console.log(comment)
+                       res.status(201).send({ comment });
+                     } else {
+                      return Promise.reject({ status: 404, msg: "Not found"}) 
+                     }
+                })
+            }
+        })
+       .catch((err) => {
+        next(err);
+        });
+        };
+ 
+    //  return postComment(article_id, username, body)
+    //  .then((comment) => {
+    //      if (comment) {
+    //         res.status(201).send({ comment });
+    //          } else { 
+    //             return Promise.reject({ status: 404, msg: "Not found"}) 
+    //          }
+    //      })
+    //     .catch((err) => {
+    //     next(err);
+    //     });
+  
+    

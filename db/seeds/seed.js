@@ -26,11 +26,11 @@ const seed = (data) => {
         return db.query(
           `CREATE TABLE articles (
             article_id SERIAL PRIMARY KEY,
-            title TEXT,
-            body TEXT,
+            title TEXT NOT NULL,
+            body TEXT NOT NULL,
             votes INT,
             topic TEXT,
-            author TEXT,
+            author TEXT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
             FOREIGN KEY (topic) REFERENCES topics(slug) ON DELETE SET NULL,
             FOREIGN KEY (author) REFERENCES users(username) ON DELETE SET NULL
@@ -41,11 +41,11 @@ const seed = (data) => {
         return db.query(
            `CREATE TABLE comments (
             comment_id SERIAL PRIMARY KEY,
-            author TEXT,
+            author TEXT NOT NULL,
             article_id INT,
-            votes INT,
+            votes INT DEFAULT 0,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            body TEXT,
+            body TEXT NOT NULL,
             FOREIGN KEY (author) REFERENCES users(username) ON DELETE SET NULL,
             FOREIGN KEY (article_id) REFERENCES articles(article_id) ON DELETE SET NULL
           );`

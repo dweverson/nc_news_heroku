@@ -303,6 +303,14 @@ describe('1. GET /api/topics', () => {
             expect(res.body.msg).toBe("Bad request")
      });
     })
+    test("status:404 invalid url and error message", () => {
+        return request(app)
+            .get('/api/articlesinvalid')
+            .expect(404)
+            .then((res) => {
+                expect(res.body.msg).toBe("Invalid URL")
+            })
+    })
 })
 
 describe('5. GET /api/articles/:article_id/comments', () => {
@@ -343,8 +351,115 @@ describe('5. GET /api/articles/:article_id/comments', () => {
             expect(res.body.msg).toBe("Bad request");
           });
       });
+      test("status:404 invalid url and error message", () => {
+        return request(app)
+            .get('/api/article/1/invalid')
+            .expect(404)
+            .then((res) => {
+                expect(res.body.msg).toBe("Invalid URL")
+            })
+    })
 });
 
+describe('6. POST /api/articles/:article_id/comments', () => {
+    test('status:201, posts new comment to article by id, returns new comment', () => {
+      return request(app)
+        .post('/api/articles/2/comments')
+        .send({ username : 'butter_bridge', body : 'this is a new comment!' })
+        .expect(201)
+        .then(({ body }) => {
+          const { comment } = body;
+            expect(comment).toEqual(
+              expect.objectContaining({
+                author: 'butter_bridge',
+                body: 'this is a new comment!'
+              })
+            );
+        });
+    });
+    test('status:201, ignores additional key/value pairs, returns new comment', () => {
+        return request(app)
+          .post('/api/articles/2/comments')
+          .send({ username : 'butter_bridge', body : 'this is a new comment!', extrakey : "value" })
+          .expect(201)
+          .then(({ body }) => {
+            const { comment } = body;
+              expect(comment).toEqual(
+                expect.objectContaining({
+                  author: 'butter_bridge',
+                  body: 'this is a new comment!'
+                })
+              );
+          });
+        });
+        test('status:400, non-existing username, returns error message', () => {
+            return request(app)
+              .post('/api/articles/2/comments')
+              .send({ username : 'steve', body : 'this is a new comment!' })
+              .expect(400)
+              .then((res) => {
+                expect(res.body.msg).toBe("Bad request")
+              }); 
+          });
+          test('status:400, invalid body key, returns error message', () => {
+            return request(app)
+              .post('/api/articles/2/comments')
+              .send({ username : 'butter_bridge', title : "new comment" })
+              .expect(400)
+              .then((res) => {
+                expect(res.body.msg).toBe("Bad request")
+              }); 
+          });
+          test('status:400, invalid username key, returns error message', () => {
+            return request(app)
+              .post('/api/articles/2/comments')
+              .send({ notname : 'butter_bridge', body : "new comment" })
+              .expect(400)
+              .then((res) => {
+                expect(res.body.msg).toBe("Bad request")
+              }); 
+          });
+    test('status:404, article id that does not exist, return error message', () => {
+        return request(app)
+          .post('/api/articles/1000/comments')
+          .expect(404)
+          .then((res) => {
+            expect(res.body.msg).toBe("Not found")
+          }); 
+      });
+    test('status:400 invalid ID, returns error message', () => {
+        return request(app)
+          .post('/api/articles/invalid_id/comments')
+          .expect(400)
+          .then((res) => {
+            expect(res.body.msg).toBe("Bad request");
+          });
+      });
+      test("status:404 invalid url and error message", () => {
+        return request(app)
+            .post('/api/article/1/invalid')
+            .expect(404)
+            .then((res) => {
+                expect(res.body.msg).toBe("Invalid URL")
+            })
+    })
+});
 
-
+describe('7. DELETE /api/comments/:comment_id', () => {
+    test('status:201, posts new comment to article by id, returns new comment', () => {
+      return request(app)
+        .post('/api/articles/2/comments')
+        .send({ username : 'butter_bridge', body : 'this is a new comment!' })
+        .expect(201)
+        .then(({ body }) => {
+          const { comment } = body;
+            expect(comment).toEqual(
+              expect.objectContaining({
+                author: 'butter_bridge',
+                body: 'this is a new comment!'
+              })
+            );
+        });
+    });
+});
 
