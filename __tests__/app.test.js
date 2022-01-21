@@ -446,19 +446,12 @@ describe('6. POST /api/articles/:article_id/comments', () => {
 });
 
 describe('7. DELETE /api/comments/:comment_id', () => {
-    test('status:201, posts new comment to article by id, returns new comment', () => {
+    test('status:204, delete comment by ID, responds with message', () => {
       return request(app)
-        .post('/api/articles/2/comments')
-        .send({ username : 'butter_bridge', body : 'this is a new comment!' })
-        .expect(201)
-        .then(({ body }) => {
-          const { comment } = body;
-            expect(comment).toEqual(
-              expect.objectContaining({
-                author: 'butter_bridge',
-                body: 'this is a new comment!'
-              })
-            );
+        .delete('/api/comments/1')
+        .expect(204)
+        .then((res) => {
+            expect(res.body.msg).toBe("No content")
         });
     });
 });

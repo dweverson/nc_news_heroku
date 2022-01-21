@@ -6,7 +6,8 @@ const {
     patchVotesByArticleId,
     getArticles,
     getCommentsByArticleId,
-    postCommentByArticleId
+    postCommentByArticleId, 
+    removeCommentById
     } = require('./controllers/articles.controller')
 
 const app = express();
@@ -19,6 +20,8 @@ app.get('/api/articles/:article_id/comments', getCommentsByArticleId)
 
 app.patch('/api/articles/:article_id', patchVotesByArticleId)
 app.post('/api/articles/:article_id/comments', postCommentByArticleId)
+
+app.delete('/api/comments/:comment_id', removeCommentById)
 
 app.all("*", handle404s)
 

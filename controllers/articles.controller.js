@@ -1,5 +1,5 @@
 const comments = require('../db/data/test-data/comments.js');
-const { selectArticleById, patchArticleVotes, selectArticles, selectCommentsByArticleId, postComment } = require('../models/articles.model.js');
+const { selectArticleById, patchArticleVotes, selectArticles, selectCommentsByArticleId, postComment, deleteCommentById } = require('../models/articles.model.js');
 const { checkArticleIdExists, checkUserExists } = require('../utils/utils.js')
 
 exports.getArticleById = ( req, res, next) => {
@@ -73,7 +73,6 @@ exports.getCommentsByArticleId = ( req, res, next) => {
         res.status(200).send({ comments }) 
         } else if (comments.length === 0) {
             return Promise.reject({ status: 200, msg: "No comments, or article doesnt exist" })
-            //res.status(204).send({msg: "No comments, or article doesnt exist"})
         }
         else {
             return Promise.reject({ status: 404, msg: "Not found"})
@@ -92,7 +91,7 @@ exports.postCommentByArticleId = (req, res, next) => {
         if (articleExists){
                 return postComment(article_id, username, body)
                 .then((comment) => {
-                    if (comment) { console.log(comment)
+                    if (comment) { 
                        res.status(201).send({ comment });
                      } else {
                       return Promise.reject({ status: 404, msg: "Not found"}) 
@@ -105,16 +104,13 @@ exports.postCommentByArticleId = (req, res, next) => {
         });
         };
  
-    //  return postComment(article_id, username, body)
-    //  .then((comment) => {
-    //      if (comment) {
-    //         res.status(201).send({ comment });
-    //          } else { 
-    //             return Promise.reject({ status: 404, msg: "Not found"}) 
-    //          }
-    //      })
-    //     .catch((err) => {
-    //     next(err);
-    //     });
   
-    
+    exports.removeCommentById = ( req, res, next) => {
+        const { comment_id } = req.params;
+        deleteCommentById(comment_id).then((article) => {
+            res.status(204).send();
+        })
+        .catch((err) => {
+            next(err);
+            });
+    }

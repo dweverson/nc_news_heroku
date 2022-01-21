@@ -72,3 +72,10 @@ exports.postComment = (article_id, author, body) => {
         return rows[0]
     })
 }
+
+exports.deleteCommentById = (comment_id) => {
+    console.log(comment_id)
+    return db.query(`DELETE FROM comments WHERE comment_id = $1`, 
+    [comment_id]
+      );
+  };
