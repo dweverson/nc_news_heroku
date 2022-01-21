@@ -445,14 +445,19 @@ describe('6. POST /api/articles/:article_id/comments', () => {
     })
 });
 
-describe('7. DELETE /api/comments/:comment_id', () => {
-    test('status:204, delete comment by ID, responds with message', () => {
+describe.only('7. DELETE /api/comments/:comment_id', () => {
+    test('status:204, delete comment by ID', () => {
       return request(app)
         .delete('/api/comments/1')
         .expect(204)
-        .then((res) => {
-            expect(res.body.msg).toBe("No content")
-        });
     });
+    test('status:404, content doesnt exist to delete, responds with message', () => {
+        return request(app)
+          .delete('/api/comments/1000')
+          .expect(404)
+          .then((res) => {
+              expect(res.body.msg).toBe("Not found")
+          });
+      });
 });
 

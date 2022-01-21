@@ -107,8 +107,14 @@ exports.postCommentByArticleId = (req, res, next) => {
   
     exports.removeCommentById = ( req, res, next) => {
         const { comment_id } = req.params;
-        deleteCommentById(comment_id).then((article) => {
-            res.status(204).send();
+
+        return deleteCommentById(comment_id)
+        .then(({ rowCount }) => {
+            if (!rowCount) {
+                return Promise.reject({ status: 404, msg: "Not found"})
+            } else {
+            res.status(204).end(); 
+            }
         })
         .catch((err) => {
             next(err);
