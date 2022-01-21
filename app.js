@@ -9,10 +9,14 @@ const {
     postCommentByArticleId, 
     removeCommentById
     } = require('./controllers/articles.controller')
+const endpoints = require('./endpoints.json');
 
 const app = express();
 app.use(express.json());
 
+app.get('/api', (req, res, next) => {
+    res.send(endpoints);
+})
 app.get('/api/topics', getTopics);
 app.get('/api/articles/:article_id', getArticleById);
 app.get('/api/articles', getArticles);

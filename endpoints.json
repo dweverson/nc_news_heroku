@@ -19,7 +19,87 @@
           "topic": "cooking",
           "author": "weegembump",
           "body": "Text from the article..",
+          "created_at": 1527695953341,
+          "comment_count": 2,
+          "article_id": 1,
+          "votes": 3
+        }
+      ]
+    }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves article based on article_id",
+    "queries": [],
+    "exampleResponse": {
+      "article": [
+        {
+          "title": "Seafood substitutions are increasing",
+          "topic": "cooking",
+          "author": "weegembump",
+          "body": "Text from the article..",
+          "created_at": 1527695953341,
+          "comment_count": 2,
+          "article_id": 1,
+          "votes": 3
+        }
+      ]
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "serves array of comments based on article_id",
+    "queries": [],
+    "exampleResponse": {
+      "comment": [
+        {
+          "comment_id": 1,
+          "votes": 2,
+          "author": "weegembump",
+          "body": "Text from the article..",
           "created_at": 1527695953341
+        }
+      ]
+    }
+  },
+  "PATCH /api/articles/:article_id/": {
+    "description": "updates vote count of article by article_id, serves updated article",
+    "queries": [],
+    "exampleResponse": {
+      "comment": [
+        {
+          "title": "Seafood substitutions are increasing",
+          "topic": "cooking",
+          "author": "weegembump",
+          "body": "Text from the article..",
+          "created_at": 1527695953341,
+          "comment_count": 2,
+          "article_id": 1,
+          "votes": 3
+        }
+      ]
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "Posts a new comment by article_id, returns new comment",
+    "queries": [],
+    "exampleResponse": {
+      "comment": [
+        {
+          "comment_id": 1,
+          "votes": 2,
+          "author": "weegembump",
+          "body": "Text from the article..",
+          "created_at": 1527695953341
+        }
+      ]
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "Deletes comment based on given article_id",
+    "queries": [],
+    "exampleResponse": {
+      "comment": [
+        {
+          "status": 204
         }
       ]
     }
