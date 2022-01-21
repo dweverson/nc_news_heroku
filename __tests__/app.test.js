@@ -445,7 +445,7 @@ describe('6. POST /api/articles/:article_id/comments', () => {
     })
 });
 
-describe.only('7. DELETE /api/comments/:comment_id', () => {
+describe('7. DELETE /api/comments/:comment_id', () => {
     test('status:204, delete comment by ID', () => {
       return request(app)
         .delete('/api/comments/1')
