@@ -55,6 +55,7 @@ exports.selectCommentsByArticleId = (article_id) => {
         `
         SELECT comment_id, author, body, created_at, votes FROM comments
         WHERE article_id = $1
+        ORDER BY created_at DESC
         `,
         [article_id]
     )
