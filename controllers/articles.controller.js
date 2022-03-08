@@ -1,6 +1,5 @@
-const comments = require('../db/data/test-data/comments.js');
 const { selectArticleById, patchArticleVotes, selectArticles, selectCommentsByArticleId, postComment } = require('../models/articles.model.js');
-const { checkArticleIdExists, checkUserExists } = require('../utils/utils.js')
+const { checkArticleIdExists } = require('../utils/utils.js')
 
 exports.getArticleById = ( req, res, next) => {
     const { article_id } = req.params;

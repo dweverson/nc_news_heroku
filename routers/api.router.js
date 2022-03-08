@@ -9,6 +9,4 @@ apiRouter.use('/topics', topicsRouter);
 apiRouter.use('/articles', articlesRouter);
 apiRouter.use('/comments', commentsRouter);
 
-
-
 module.exports = apiRouter; 

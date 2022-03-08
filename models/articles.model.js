@@ -35,14 +35,12 @@ exports.selectArticles = (sort_by = "created_at", order_by = "desc", topic) => {
                     COUNT(c.article_id) as comment_count FROM articles a 
                     LEFT JOIN comments c on a.article_id = c.article_id `
 
-// if topic add in where clause, 
 if (topic != undefined ) {
     qryString += `WHERE topic = '${topic}' `
     }
 
 qryString += `GROUP BY a.article_id
              ORDER BY ${sort_by} ${order_by};`
-           //  console.log(qryString)
     return db.query(qryString)
         .then(({ rows }) => {
         return rows
